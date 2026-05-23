@@ -1,10 +1,10 @@
 
 
-import { createRequire } from 'module';
+   import { createRequire } from 'module';
 
-const require = createRequire(import.meta.url);
+   const require = createRequire(import.meta.url);
 
-
+  
 
 // src/config/index.ts
 import dotenv from "dotenv";
@@ -174,7 +174,6 @@ var authService = {
 var loginUser = async (req, res) => {
   try {
     const result = await authService.loginUserIntoDB(req.body);
-
     sendResponse_default(res, {
       statusCode: 200,
       success: true,
@@ -214,7 +213,6 @@ var postIssueIntoDB = async (payload) => {
   return result;
 };
 var getAllIssuesFromDB = async (query) => {
-
   const issues = await pool.query(`
         SELECT * FROM issues
         `);
@@ -359,7 +357,6 @@ var issueService = {
 // src/modules/issue/issue.controller.ts
 var postIssue = async (req, res) => {
   try {
-
     const payload = {
       title: req.body.title,
       description: req.body.description,
@@ -402,7 +399,6 @@ var getSingleIssues = async (req, res) => {
   const { id } = req.params;
   try {
     const result = await issueService.getSingleIssueFromDB(id);
-
     if (!result) {
       return sendResponse_default(res, {
         statusCode: 404,

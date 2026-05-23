@@ -75,7 +75,7 @@ const getAllIssuesFromDB = async (query: Query) => {
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
 
-  return finalIssues;
+  return filteredIssues;
 };
 
 const getSingleIssueFromDB = async (id: string) => {
