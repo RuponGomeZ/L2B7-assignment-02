@@ -14,7 +14,7 @@ const loginUser = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     sendResponse(res, {
-      statusCode: 500,
+      statusCode: 401,
       success: false,
       message: error.message,
     });

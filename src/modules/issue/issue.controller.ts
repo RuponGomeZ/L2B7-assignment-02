@@ -13,14 +13,14 @@ const postIssue = async (req: Request, res: Response) => {
       id: req.user?.id,
     };
     const result = await issueService.postIssueIntoDB(payload);
-    sendResponse(res, {
+    return sendResponse(res, {
       statusCode: 201,
       success: true,
       message: "Issue created successfully",
       data: result.rows[0],
     });
   } catch (error: any) {
-    sendResponse(res, {
+    return sendResponse(res, {
       statusCode: 500,
       success: false,
       message: error.message,
@@ -30,15 +30,19 @@ const postIssue = async (req: Request, res: Response) => {
 
 // Get all issues
 const getAllIssues = async (req: Request, res: Response) => {
+  const query = req.query;
+
+  // console.log(query.sort);
+
   try {
-    const result = await issueService.getAllIssuesFromDB();
-    sendResponse(res, {
+    const result = await issueService.getAllIssuesFromDB(query);
+    return sendResponse(res, {
       statusCode: 200,
       success: true,
       data: result,
     });
   } catch (error: any) {
-    sendResponse(res, {
+    return sendResponse(res, {
       statusCode: 500,
       success: false,
       error: error.message,
@@ -52,20 +56,20 @@ const getSingleIssues = async (req: Request, res: Response) => {
     const result = await issueService.getSingleIssueFromDB(id as string);
     console.log(result);
     if (!result) {
-      sendResponse(res, {
+      return sendResponse(res, {
         statusCode: 404,
         success: false,
         message: "Issue not found",
         data: {},
       });
     }
-    sendResponse(res, {
+    return sendResponse(res, {
       statusCode: 200,
       success: true,
       data: result,
     });
   } catch (error: any) {
-    sendResponse(res, {
+    return sendResponse(res, {
       statusCode: 500,
       success: false,
       error: error.message,
@@ -76,7 +80,7 @@ const getSingleIssues = async (req: Request, res: Response) => {
 // Update a issue
 const updateIssue = async (req: Request, res: Response) => {
   const { id } = req.params; //Issue id
-  // const user = req.user ?? {};
+
   const userData = {
     role: req.user?.role,
     userId: req.user?.id,
@@ -117,7 +121,7 @@ const deleteUser = async (req: Request, res: Response) => {
   const role = req.user?.role;
   if (role != "maintainer") {
     return sendResponse(res, {
-      statusCode: 401,
+      statusCode: 403,
       success: false,
       message: "Unauthorized Access",
     });

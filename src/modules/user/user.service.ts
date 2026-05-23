@@ -4,7 +4,6 @@ import { pool } from "../../db";
 
 const createUserIntoDB = async (payload: IUser) => {
   const { name, email, password, role } = payload;
-  console.log(name);
   const encryptedPassword = await bcrypt.hash(password, 10);
   const result = await pool.query(
     `

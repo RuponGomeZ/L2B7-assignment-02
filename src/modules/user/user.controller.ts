@@ -3,7 +3,6 @@ import { userService } from "./user.service";
 import sendResponse from "../../utility/sendResponse";
 
 const createUser = async (req: Request, res: Response) => {
-  console.log(req.body);
   try {
     const result = await userService.createUserIntoDB(req.body);
     sendResponse(res, {

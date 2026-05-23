@@ -17,8 +17,14 @@ const postIssueIntoDB = async (payload: {
   );
   return result;
 };
+type Query = {
+  sort?: string;
+  type?: string;
+  status?: string;
+};
+const getAllIssuesFromDB = async (query: Query) => {
+  console.log("from service", query);
 
-const getAllIssuesFromDB = async () => {
   const issues = await pool.query(`
         SELECT * FROM issues
         `);
@@ -47,6 +53,30 @@ const getAllIssuesFromDB = async () => {
     created_at: i.created_at,
     updated_at: i.updated_at,
   }));
+  let filteredIssues = finalIssues;
+  if (query.type) {
+    filteredIssues = filteredIssues.filter(
+      (issue) => issue.type === query.type,
+    );
+  }
+
+  if (query.status) {
+    filteredIssues = filteredIssues.filter(
+      (issue) => issue.status === query.status,
+    );
+  }
+
+  filteredIssues.sort((a, b) => {
+    if (query.sort === "oldest") {
+      return (
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      );
+    }
+
+    // newest default
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
+
   return finalIssues;
 };
 
@@ -112,7 +142,10 @@ const updateIssueInDB = async (
   `,
     [id],
   );
-  console.log(getUserFromDB.rows[0], getIssueFromDB.rows[0]);
+
+  if (!getIssueFromDB) {
+    throw new Error("Issue not found");
+  }
 
   const role = getUserFromDB.rows[0].role;
   const issue = getIssueFromDB.rows[0];
@@ -121,7 +154,7 @@ const updateIssueInDB = async (
     role !== "maintainer" &&
     !(
       role === "contributor" &&
-      issue.reporter_id === loginUser.userId &&
+      issue.reporter_id === Number(loginUser.userId) &&
       issue.status === "open"
     )
   ) {
@@ -134,11 +167,25 @@ const updateIssueInDB = async (
     SET
     title=COALESCE($1,title),
     type=COALESCE($2,type),
-    description=COALESCE($3,description)
+    description=COALESCE($3,description),
+    updated_at = NOW()
     WHERE id=$4 RETURNING *
     `,
     [title, type, description, id],
   );
+
+  if (role === "maintainer") {
+    await pool.query(
+      `
+      UPDATE issues
+      SET status = $1, updated_at = NOW()
+      WHERE id = $2
+      RETURNING *
+      `,
+      ["in_progress", id],
+    );
+  }
+
   return result;
 };
 
