@@ -5,7 +5,6 @@ import sendResponse from "../../utility/sendResponse";
 // create Issue
 const postIssue = async (req: Request, res: Response) => {
   try {
-    console.log(req.user);
     const payload = {
       title: req.body.title,
       description: req.body.description,
@@ -32,8 +31,6 @@ const postIssue = async (req: Request, res: Response) => {
 const getAllIssues = async (req: Request, res: Response) => {
   const query = req.query;
 
-  // console.log(query.sort);
-
   try {
     const result = await issueService.getAllIssuesFromDB(query);
     return sendResponse(res, {
@@ -54,7 +51,7 @@ const getSingleIssues = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const result = await issueService.getSingleIssueFromDB(id as string);
-    console.log(result);
+
     if (!result) {
       return sendResponse(res, {
         statusCode: 404,

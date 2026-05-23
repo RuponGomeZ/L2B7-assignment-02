@@ -23,8 +23,6 @@ type Query = {
   status?: string;
 };
 const getAllIssuesFromDB = async (query: Query) => {
-  console.log("from service", query);
-
   const issues = await pool.query(`
         SELECT * FROM issues
         `);

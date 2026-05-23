@@ -20,8 +20,7 @@ const loginUserIntoDB = async (payload: {
   }
 
   const matchPassword = await bcrypt.compare(password, user.password);
-  // To remove
-  //   console.log(matchPassword);
+
   if (!matchPassword) {
     throw new Error("Invalid Credentials!!");
   }
