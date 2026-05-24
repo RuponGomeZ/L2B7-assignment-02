@@ -172,7 +172,7 @@ const updateIssueInDB = async (
     [title, type, description, id],
   );
 
-  if (role === "maintainer") {
+  if (role === "maintainer" && payload.status) {
     await pool.query(
       `
       UPDATE issues
@@ -180,7 +180,7 @@ const updateIssueInDB = async (
       WHERE id = $2
       RETURNING *
       `,
-      ["in_progress", id],
+      [payload.status, id],
     );
   }
 

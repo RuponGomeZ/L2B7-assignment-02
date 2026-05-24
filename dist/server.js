@@ -28,7 +28,7 @@ var sendResponse = (res, data) => {
     success: data.success,
     message: data.message,
     data: data.data,
-    error: data.error
+    errors: data.errors
   });
 };
 var sendResponse_default = sendResponse;
@@ -254,7 +254,7 @@ var getAllIssuesFromDB = async (query) => {
     }
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
-  return finalIssues;
+  return filteredIssues;
 };
 var getSingleIssueFromDB = async (id) => {
   const issueResult = await pool.query(
@@ -324,7 +324,7 @@ var updateIssueInDB = async (payload, id, loginUser2) => {
     `,
     [title, type, description, id]
   );
-  if (role === "maintainer") {
+  if (role === "maintainer" && payload.status) {
     await pool.query(
       `
       UPDATE issues
@@ -332,7 +332,7 @@ var updateIssueInDB = async (payload, id, loginUser2) => {
       WHERE id = $2
       RETURNING *
       `,
-      ["in_progress", id]
+      [payload.status, id]
     );
   }
   return result;
@@ -374,7 +374,7 @@ var postIssue = async (req, res) => {
     return sendResponse_default(res, {
       statusCode: 500,
       success: false,
-      message: error.message
+      errors: error.message
     });
   }
 };
@@ -385,13 +385,14 @@ var getAllIssues = async (req, res) => {
     return sendResponse_default(res, {
       statusCode: 200,
       success: true,
+      message: "Issues retrived successfully",
       data: result
     });
   } catch (error) {
     return sendResponse_default(res, {
       statusCode: 500,
       success: false,
-      error: error.message
+      errors: error.message
     });
   }
 };
@@ -410,13 +411,14 @@ var getSingleIssues = async (req, res) => {
     return sendResponse_default(res, {
       statusCode: 200,
       success: true,
+      message: "Issue retrived successfully",
       data: result
     });
   } catch (error) {
     return sendResponse_default(res, {
       statusCode: 500,
       success: false,
-      error: error.message
+      errors: error.message
     });
   }
 };
@@ -442,13 +444,14 @@ var updateIssue = async (req, res) => {
     sendResponse_default(res, {
       statusCode: 200,
       success: true,
+      message: "Issue updated successfully",
       data: result.rows[0]
     });
   } catch (error) {
     sendResponse_default(res, {
       statusCode: 500,
       success: false,
-      message: error.message
+      errors: error.message
     });
   }
 };
@@ -459,7 +462,7 @@ var deleteUser = async (req, res) => {
     return sendResponse_default(res, {
       statusCode: 403,
       success: false,
-      message: "Unauthorized Access"
+      errors: "Unauthorized Access"
     });
   }
   try {
@@ -468,7 +471,7 @@ var deleteUser = async (req, res) => {
       return sendResponse_default(res, {
         statusCode: 404,
         success: false,
-        message: "Issue not found!"
+        errors: "Issue not found!"
       });
     }
     return sendResponse_default(res, {
@@ -480,7 +483,7 @@ var deleteUser = async (req, res) => {
     return sendResponse_default(res, {
       statusCode: 500,
       success: false,
-      error: error.message
+      errors: error.message
     });
   }
 };

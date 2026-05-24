@@ -22,7 +22,7 @@ const postIssue = async (req: Request, res: Response) => {
     return sendResponse(res, {
       statusCode: 500,
       success: false,
-      message: error.message,
+      errors: error.message,
     });
   }
 };
@@ -36,13 +36,14 @@ const getAllIssues = async (req: Request, res: Response) => {
     return sendResponse(res, {
       statusCode: 200,
       success: true,
+      message: "Issues retrived successfully",
       data: result,
     });
   } catch (error: any) {
     return sendResponse(res, {
       statusCode: 500,
       success: false,
-      error: error.message,
+      errors: error.message,
     });
   }
 };
@@ -63,13 +64,14 @@ const getSingleIssues = async (req: Request, res: Response) => {
     return sendResponse(res, {
       statusCode: 200,
       success: true,
+      message: "Issue retrived successfully",
       data: result,
     });
   } catch (error: any) {
     return sendResponse(res, {
       statusCode: 500,
       success: false,
-      error: error.message,
+      errors: error.message,
     });
   }
 };
@@ -101,13 +103,14 @@ const updateIssue = async (req: Request, res: Response) => {
     sendResponse(res, {
       statusCode: 200,
       success: true,
+      message: "Issue updated successfully",
       data: result.rows[0],
     });
   } catch (error: any) {
     sendResponse(res, {
       statusCode: 500,
       success: false,
-      message: error.message,
+      errors: error.message,
     });
   }
 };
@@ -120,7 +123,7 @@ const deleteUser = async (req: Request, res: Response) => {
     return sendResponse(res, {
       statusCode: 403,
       success: false,
-      message: "Unauthorized Access",
+      errors: "Unauthorized Access",
     });
   }
 
@@ -130,7 +133,7 @@ const deleteUser = async (req: Request, res: Response) => {
       return sendResponse(res, {
         statusCode: 404,
         success: false,
-        message: "Issue not found!",
+        errors: "Issue not found!",
       });
     }
     return sendResponse(res, {
@@ -142,7 +145,7 @@ const deleteUser = async (req: Request, res: Response) => {
     return sendResponse(res, {
       statusCode: 500,
       success: false,
-      error: error.message,
+      errors: error.message,
     });
   }
 };
